@@ -8,7 +8,9 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -26,9 +28,22 @@ public class TesteConsumidor {
 		Destination fila = (Destination) context.lookup("financeiro");
 		MessageConsumer consumer = session.createConsumer(fila);
 
-		Message message = consumer.receive();
-		System.out.println("Recebendo msg: " + message);
-
+//		Message message = consumer.receive();
+//		System.out.println("Recebendo msg: " + message);
+		
+		consumer.setMessageListener(new MessageListener() {
+			@Override
+			public void onMessage(Message message) {
+				TextMessage text = (TextMessage) message;
+				try {
+					System.out.println(text.getText());
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}	
+			}
+		});
+		
+		
 		new Scanner(System.in).nextLine();
 
 		session.close();
